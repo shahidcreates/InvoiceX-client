@@ -1,6 +1,7 @@
 import { Pencil } from 'lucide-react';
 import React, { useContext, useState } from 'react'
 import { AppContext } from '../context/AppContext';
+import InvoiceForm from '../components/InvoiceForm';
 
 const MainPage = () => {
 
@@ -18,10 +19,10 @@ const MainPage = () => {
     setIsEditingTitle(false);
   }
   return (
-    <div className='container min-h-screen p-6 bg-blue-300 '>
-      <div className='container px-4 mx-auto max-w-5xl'>
+    <div className='min-h-screen p-6 w-full bg-blue-300 '>
+      <div className=' px-4 mx-auto w-full max-w-6xl '>
         {/* Title Bar */}
-        <div className='bg-white border rounded shadow-sm p-3 mb-4 '>
+        <div className='bg-white border rounded shadow-sm  p-3 mb-4 '>
           <div className='flex items-center'>
             {isEditingTitle ? ( 
                 <input type='text' 
@@ -48,7 +49,7 @@ const MainPage = () => {
           {/* invoice form */}
           <div className='w-full flex lg:w-1/2'>
             <div className='bg-white border rounded shadow-sm p-4 w-full'>
-              invoice form
+              <InvoiceForm />
             </div>
           </div>
 
