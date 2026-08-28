@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { assets } from '../assets/assets'
 import { FileUp, Trash, Trash2, TrashIcon } from 'lucide-react'
 import { AppContext } from '../context/AppContext';
@@ -74,6 +74,17 @@ const InvoiceForm = () => {
         }
     }
 
+    useEffect(()=>{
+        if(!invoiceData.invoice.number){
+            const randomNumber = `INV-${Math.floor(100000 + Math.random()*900000)}`;
+            setInvoiceData((prev)=>({
+                ...prev,
+                invoice:{...prev.invoice, number:randomNumber}
+            }))
+        }
+    },[]);
+
+
     return(
     <div className='py-4'>
         {/* company logo */}
@@ -82,7 +93,12 @@ const InvoiceForm = () => {
             <div className="flex items-center gap-3">
                 <label htmlFor='image'>
                     {/* <img src={assets.upload_area} alt="upload" width={48} /> */}
-                    {invoiceData.logo ? invoiceData.logo: (<FileUp size={48} />)}
+                    {invoiceData.logo ? <img src={invoiceData.logo} alt="Logo" width={58}  /> : (
+                        <div className='flex justify-center items-center border border-blue-450 hover:bg-gray-500 cursor-pointer bg-gray-400 text-white rounded-2xl p-1'>
+                            <h2 className='text-xl'>Upload</h2>
+                            <FileUp size={38} />
+                        </div>
+                    )}
                 </label>
                 <input type="file" name='logo' id='image' hidden accept='image/*' 
                 onChange={handleLogoUpload}/>
@@ -169,7 +185,7 @@ const InvoiceForm = () => {
                 <div className="w-full  md:col-span-1">
                     <label htmlFor="invoiceNumber">Invoice Number</label>
                     <input type="text" disabled id='invoiceNumber'
-                    className='rounded w-full  p-2.5 border border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 focus:outline-none' placeholder='Invoice Number'
+                    className='rounded w-full  p-2.5 border border-gray-300 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 focus:outline-none'
                     onChange={(e)=>{handleChange("invoice","number",e.target.value)}} value={invoiceData.invoice.number} />
                 </div>
                 <div className="w-full md:col-span-1">

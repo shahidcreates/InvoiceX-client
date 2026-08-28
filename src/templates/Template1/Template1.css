@@ -1,0 +1,77 @@
+
+.w-800{
+    max-width: 800px;
+}
+
+.company-title{
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.invoice-title{
+    color: #ea580c;
+    font-size: 28px;
+    font-weight: bold;
+}
+.billing-title{
+    color: #ea580c;
+    font-size: 16px;
+    font-weight: bold;
+}
+.orange-border{
+    border-color: #ea580c !important;
+}
+
+.billing-box{
+    background-color: #fff7ed;
+}
+.table-header{
+    background-color: #ea580c !important;
+    border: #ea580c;
+    color: white !important;
+}
+.totals-box{
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #fff7ed;
+}
+.total-highlight, .template1 .company-title {
+    color: #ea580c;
+}
+
+.template1 {
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.invoice-table {
+  min-width: 600px;
+  border-collapse: collapse;
+}
+
+@media (max-width: 640px) {
+  .template1 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+
+  .invoice-title {
+    font-size: 24px;
+  }
+
+  .company-title {
+    font-size: 16px;
+  }
+
+  .billing-title {
+    font-size: 15px;
+  }
+
+  .template1 p {
+    font-size: 14px;
+  }
+
+  .totals-box {
+    font-size: 14px;
+  }
+}

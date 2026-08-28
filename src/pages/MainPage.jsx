@@ -3,22 +3,47 @@ import React, { useContext, useState } from 'react'
 import { AppContext } from '../context/AppContext';
 import InvoiceForm from '../components/InvoiceForm';
 import TemplateGrid from '../components/TemplateGrid';
+import toast from 'react-hot-toast';
+import { useNavigate } from 'react-router-dom';
 
 const MainPage = () => {
 
   const[isEditingTitle,setIsEditingTitle] = useState(false);
-  const {invoiceTitle,setInvoiceTitle} = useContext(AppContext);
 
+  const navigate = useNavigate();
+
+  const {
+    invoiceTitle,setInvoiceTitle, 
+    setSelectedTemplate, invoiceData,setInvoiceData
+  } = useContext(AppContext);
+
+  const handleTemplateClick = (templateId) => {
+    const hasIvalidItem = invoiceData.items.some((item)=> !item.qty || !item.amount);
+    if(hasIvalidItem){
+      toast.error("Please enter quantity and amount for all items.");
+      return;
+    }
+    setSelectedTemplate(templateId);
+    navigate("/preview")
+  }
+  
   const handleTitleChang = (e) =>{
     const newTitle = e.target.value;
     setInvoiceTitle(newTitle);
+    setInvoiceData((prev)=>({
+      ...prev,
+      title: newTitle
+    }));
   }
+
   const handleTitleEdit = () =>{
     setIsEditingTitle(true);
   }
+
   const handleTitleBlur = () =>{
     setIsEditingTitle(false);
   }
+
   return (
     <div className='min-h-screen p-6 w-full bg-blue-300 '>
       <div className=' px-4 mx-auto w-full max-w-6xl '>
@@ -57,7 +82,7 @@ const MainPage = () => {
           {/* template grid*/}
           <div className='w-full flex lg:w-1/2'>
             <div className='bg-white border rounded shadow-sm p-4 w-full'>
-              <TemplateGrid/>
+              <TemplateGrid onTemplateClick={handleTemplateClick}/>
             </div>
           </div>
         </div>
