@@ -6,6 +6,8 @@ import { saveInvoice } from '../services/invoiceService';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import html2canvas from 'html2canvas';
+import { uploadInvoiceThumbnail } from '../services/cloudinaryService';
 
 const PreviewPage = () => {
   const previewRef = useRef();
@@ -17,8 +19,19 @@ const PreviewPage = () => {
     try{
       setLoading(true);
       //TODO : create thumbnail url
+
+      const convas = await html2canvas(previewRef.current,{
+        scale : 2,
+        useCORS: true,
+        backgroundColor : "#fff",
+        scrollY: -window.scrollY,
+      });
+
+      const imageData = convas.toDataURL("image/png");
+      const thumbnailUrl = await uploadInvoiceThumbnail(imageData);
       const payLoad = {
         ...invoiceData,
+        thumbnailUrl,
         template : selectedTemplate
       }
 
