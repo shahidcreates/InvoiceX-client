@@ -1,13 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { AppContext } from '../context/AppContext';
+import { AppContext, initialInvoiceData } from '../context/AppContext';
 import { getAllInvoices } from '../services/invoiceService';
 import toast from 'react-hot-toast';
 import { Plus } from 'lucide-react';
 import { formatDate } from '../utils/formatInvoiceData';
+import { useNavigate } from 'react-router-dom';
 
 const DashBoard = () => {
   const [invoice,setInvoice] = useState([]);
-  const {baseUrl} = useContext(AppContext);
+  const {baseUrl, setInvoiceData, setInvoiceTitle, setSelectedTemplate} = useContext(AppContext);
+
+  const navigate = useNavigate();
 
   useEffect(()=>{
     const fetchInvoices = async ()=>{
@@ -20,12 +23,27 @@ const DashBoard = () => {
     }
     fetchInvoices();
   },[baseUrl]);
+
+  const handleViewClick= (invoice)=>{
+    setInvoiceData(invoice);
+    setSelectedTemplate(invoice.teplate || "template1");
+    setInvoiceTitle(invoice.title || "New Invoice");
+    navigate('/preview');
+  }
+
+  const handleCreateNew=()=>{
+    setInvoiceTitle("New Invoice");
+    setSelectedTemplate("template1");
+    setInvoiceData(initialInvoiceData);
+    navigate('/generate');
+  }
+
   return (
     <div className='p-5 w-full'>
       <div className='grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5'>
 
         <div className='w-full min-w-0'>
-          <div className='flex h-full w-full flex-col justify-center items-center border-2 border-gray-300 shadow-sm cursor-pointer' style={{minHeight:'270px'}}>
+          <div onClick={handleCreateNew} className='flex h-full w-full flex-col justify-center items-center border-2 border-gray-300 shadow-sm cursor-pointer' style={{minHeight:'270px'}}>
             <Plus size={48}/>
             <p className='font-medium'>Create New Invoice</p>
           </div>
@@ -33,7 +51,7 @@ const DashBoard = () => {
 
         {invoice.map((invoice,idx)=>(
           <div key={idx} className='w-full min-w-0'>
-            <div className='w-full overflow-hidden shadow-sm cursor-pointer' style={{minHeight:'270px'}}>
+            <div className='w-full overflow-hidden shadow-sm cursor-pointer' style={{minHeight:'270px'}} onClick={()=> handleViewClick(invoice)}>
               {invoice.thumbnailUrl && (
                 <img src={invoice.thumbnailUrl} alt="Invoice thumbnail" style={{height:'250px'}}  className='block w-full h-[250px] object-cover'/>
               )}

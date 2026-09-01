@@ -2,24 +2,26 @@ import React, { useContext, useRef, useState } from 'react'
 import { AppContext } from '../context/AppContext';
 import { templates } from '../assets/assets';
 import InvoicePreview from '../components/InvoicePreview';
-import { saveInvoice } from '../services/invoiceService';
+import { deleteInvoice, saveInvoice } from '../services/invoiceService';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import { uploadInvoiceThumbnail } from '../services/cloudinaryService';
+import { generatePdfFromElement } from '../utils/pdfUtils';
 
 const PreviewPage = () => {
   const previewRef = useRef();
   const {setSelectedTemplate, selectedTemplate, invoiceData, baseUrl} = useContext(AppContext);
   const [loading,setLoading] =useState(false);
+  const [downloading,setDownloading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSaveAndExit = async () =>{
     try{
       setLoading(true);
-      //TODO : create thumbnail url
-
+      
       const convas = await html2canvas(previewRef.current,{
         scale : 2,
         useCORS: true,
@@ -61,6 +63,36 @@ const PreviewPage = () => {
       setLoading(false);
     }
   };
+
+  const handleDeleteInvoice= async ()=>{
+    try {
+      const response = await deleteInvoice(baseUrl,invoiceData.id);
+      if (response.status === 204) {
+        toast.success("Invoice deleted successfully.");
+        navigate('/dashboard');
+      } else {
+        toast.error("Unable to delete Invoice !");
+      }
+    } catch (error) {
+      toast.error("Failed to delete Invoice ! ", error.message);
+    }
+  }
+
+  const handleDownloadPdf = async ()=>{
+    if (!previewRef.current) {
+      return;
+    }
+
+    try {
+      setDownloading(true);
+      await generatePdfFromElement(previewRef.current, `invoice_${Date.now()}.pdf`);
+    } catch (error) {
+      toast.error("Failed to generate invoice ",error.message);
+    }finally{
+      setDownloading(false);
+    }
+  }
+
   return (
     <div className=' previewpage min-h-screen flex flex-col p-3 w-full px-4'>
 
@@ -80,14 +112,22 @@ const PreviewPage = () => {
 
         {/* List of Action Buttons  */}
         <div className='flex gap-3 justify-center flex-wrap'>
-          <button className='rounded bg-blue-500 text-white p-2 cursor-pointer' onClick={handleSaveAndExit} disabled={loading}>
+          <button className='rounded flex gap-2 bg-blue-500 text-white p-2 cursor-pointer' onClick={handleSaveAndExit} disabled={loading}>
             {loading && <Loader2 className='me-2 spin-animation' size={18}/>}
             {loading ? "Saving..." : "Save and Exit"}
           </button>
-          <button className='rounded bg-red-500 text-white p-2 cursor-pointer'>Delete Invoice</button>
+          {invoiceData.id && (
+            <button onClick={handleDeleteInvoice} className='rounded bg-red-500 text-white p-2 cursor-pointer'>Delete Invoice</button>
+          )}
+          
           <button className='rounded bg-gray-500 text-white p-2 cursor-pointer'>Back to Dashboard</button>
           <button className='rounded bg-cyan-500 text-white p-2 cursor-pointer'>Send Email</button>
-          <button className='rounded bg-emerald-500 text-white p-2 cursor-pointer'>Download PDF</button>
+          <button className='rounded flex gap-2 bg-emerald-500 text-white p-2 cursor-pointer' disabled={downloading} onClick={handleDownloadPdf}>
+            {downloading && (
+              <Loader2 className='me-2 spin-animation' size={18}/>
+            )}
+            {downloading ? "Downloading..." : "Download PDF"}
+          </button>
         </div>
 
       </div>
